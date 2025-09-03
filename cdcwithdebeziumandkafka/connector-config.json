@@ -1,0 +1,15 @@
+{
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "admin",
+    "database.password": "root",
+    "database.dbname": "pyblog",
+    "plugin.name": "pgoutput",
+    "slot.name": "pg_src_slot",
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "public.posts",
+    "tombstones.on.delete": "false",
+    "slot.drop.on.stop": "true",
+    "topic.prefix": "pyblog"
+}
