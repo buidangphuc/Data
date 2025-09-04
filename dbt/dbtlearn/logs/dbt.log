@@ -1,0 +1,38 @@
+[0m14:27:42.503535 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107ac0410>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107b0e930>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107b0e480>]}
+
+
+============================== 14:27:42.506421 | 5d44f752-8e73-4e4a-b889-060b5a01211b ==============================
+[0m14:27:42.506421 [info ] [MainThread]: Running with dbt=1.10.10
+[0m14:27:42.506737 [debug] [MainThread]: running dbt with arguments {'no_print': 'None', 'cache_selected_only': 'False', 'version_check': 'True', 'partial_parse': 'True', 'indirect_selection': 'eager', 'fail_fast': 'False', 'write_json': 'True', 'quiet': 'False', 'use_colors': 'True', 'introspect': 'True', 'log_format': 'default', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'profiles_dir': '/Users/phuc.buidang/.dbt', 'debug': 'False', 'printer_width': '80', 'invocation_command': 'dbt ', 'log_cache_events': 'False', 'empty': 'None', 'send_anonymous_usage_stats': 'True', 'log_path': '/Users/phuc.buidang/Documents/Learn/Data/dbt/dbtlearn/logs', 'warn_error': 'None', 'static_parser': 'True', 'use_experimental_parser': 'False'}
+[0m14:27:42.569992 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '5d44f752-8e73-4e4a-b889-060b5a01211b', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106a21880>]}
+[0m14:27:42.795369 [debug] [MainThread]: Set downloads directory='/var/folders/vs/llf72tl95b316yfwy9fnfz8c0000gp/T/dbt-downloads-md7xken0'
+[0m14:27:42.795773 [debug] [MainThread]: Making package index registry request: GET https://hub.getdbt.com/api/v1/index.json
+[0m14:27:43.135048 [debug] [MainThread]: Response from registry index: GET https://hub.getdbt.com/api/v1/index.json 200
+[0m14:27:43.136115 [debug] [MainThread]: Making package registry request: GET https://hub.getdbt.com/api/v1/dbt-labs/dbt_utils.json
+[0m14:27:43.314038 [debug] [MainThread]: Response from registry: GET https://hub.getdbt.com/api/v1/dbt-labs/dbt_utils.json 200
+[0m14:27:43.318605 [debug] [MainThread]: Making package registry request: GET https://hub.getdbt.com/api/v1/metaplane/dbt_expectations.json
+[0m14:27:43.501673 [debug] [MainThread]: Response from registry: GET https://hub.getdbt.com/api/v1/metaplane/dbt_expectations.json 200
+[0m14:27:43.507405 [debug] [MainThread]: Making package registry request: GET https://hub.getdbt.com/api/v1/godatadriven/dbt_date.json
+[0m14:27:43.697394 [debug] [MainThread]: Response from registry: GET https://hub.getdbt.com/api/v1/godatadriven/dbt_date.json 200
+[0m14:27:43.706134 [info ] [MainThread]: Updating lock file in file path: /Users/phuc.buidang/Documents/Learn/Data/dbt/dbtlearn/package-lock.yml
+[0m14:27:43.711003 [debug] [MainThread]: Set downloads directory='/var/folders/vs/llf72tl95b316yfwy9fnfz8c0000gp/T/dbt-downloads-6scld_g7'
+[0m14:27:43.714494 [info ] [MainThread]: Installing dbt-labs/dbt_utils
+[0m14:27:44.434299 [info ] [MainThread]: Installed from version 1.3.0
+[0m14:27:44.434538 [info ] [MainThread]: Up to date!
+[0m14:27:44.434718 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'package', 'label': '5d44f752-8e73-4e4a-b889-060b5a01211b', 'property_': 'install', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106cb7830>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107beddf0>]}
+[0m14:27:44.435058 [info ] [MainThread]: Installing metaplane/dbt_expectations
+[0m14:27:45.599129 [info ] [MainThread]: Installed from version 0.10.8
+[0m14:27:45.599357 [info ] [MainThread]: Updated version available: 0.10.9
+[0m14:27:45.599511 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'package', 'label': '5d44f752-8e73-4e4a-b889-060b5a01211b', 'property_': 'install', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107a9f950>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107bbdd90>]}
+[0m14:27:45.599846 [info ] [MainThread]: Installing godatadriven/dbt_date
+[0m14:27:46.130241 [info ] [MainThread]: Installed from version 0.16.1
+[0m14:27:46.130471 [info ] [MainThread]: Up to date!
+[0m14:27:46.130624 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'package', 'label': '5d44f752-8e73-4e4a-b889-060b5a01211b', 'property_': 'install', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106a224b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106a21880>]}
+[0m14:27:46.130940 [info ] [MainThread]: 
+[0m14:27:46.131116 [info ] [MainThread]: Updates available for packages: ['metaplane/dbt_expectations']                 
+Update your versions in packages.yml, then run dbt deps
+[0m14:27:46.379686 [debug] [MainThread]: Resource report: {"command_name": "deps", "command_success": true, "command_wall_clock_time": 3.913378, "process_in_blocks": "0", "process_kernel_time": 0.236938, "process_mem_max_rss": "125124608", "process_out_blocks": "0", "process_user_time": 0.749182}
+[0m14:27:46.380005 [debug] [MainThread]: Command `cli deps` succeeded at 14:27:46.379949 after 3.91 seconds
+[0m14:27:46.380153 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1014fabd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106a224b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x106a21880>]}
+[0m14:27:46.380279 [debug] [MainThread]: Flushing usage events
+[0m14:27:47.774342 [debug] [MainThread]: An error was encountered while trying to flush usage events
