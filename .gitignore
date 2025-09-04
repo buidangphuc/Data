@@ -1,1 +1,3 @@
 .DS_Store
+dbt_project.yml
+dbt_packages/
