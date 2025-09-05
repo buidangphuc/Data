@@ -1,0 +1,112 @@
+services:
+  airflow-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow || exit 1"]
+      interval: 10s
+      retries: 5
+
+  airflow-init:
+    image: apache/airflow:3.0.6
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+  # use the exact "pattern" from the official compose file:
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        /entrypoint airflow version
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  # let entrypoint auto-migrate the DB:
+      _AIRFLOW_DB_MIGRATE: "true"
+  # (optional – only applies if you enable FAB Auth Manager)
+  # _AIRFLOW_WWW_USER_CREATE: "true"
+  # _AIRFLOW_WWW_USER_USERNAME: "airflow"
+  # _AIRFLOW_WWW_USER_PASSWORD: "airflow"
+    user: "${AIRFLOW_UID:-50000}:0"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+
+  airflow-scheduler:
+    image: apache/airflow:3.0.6
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+    command: scheduler
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+    user: "${AIRFLOW_UID:-50000}:0"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+  airflow-api:
+    image: apache/airflow:3.0.6
+    depends_on:
+      airflow-db:
+        condition: service_healthy
+      airflow-scheduler:
+        condition: service_started
+    command: api-server
+    ports:
+      - "8080:8080"   # change to "8081:8080" if 8080 is busy
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-db:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  # If you want user/pass (FAB) later:
+  # AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    user: "${AIRFLOW_UID:-50000}:0"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+  warehouse-pg:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: analytics
+      POSTGRES_PASSWORD: analytics
+      POSTGRES_DB: analytics
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgwarehouse_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analytics -d analytics || exit 1"]
+      interval: 10s
+      retries: 5
+
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  airflow_db_data:
+  pgwarehouse_data:
+  minio_data:
