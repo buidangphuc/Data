@@ -1,0 +1,67 @@
+# Python cache & bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Logs & temp files
+logs/
+*.log
+*.tmp
+
+# Airflow
+airflow.db
+airflow.cfg
+unittests.cfg
+webserver_config.py
+dags/__pycache__/
+
+# dbt
+target/
+dbt_packages/
+dbt_modules/
+*.dbt
+
+# Docker & build artifacts
+*.pid
+*.tar
+*.gz
+*.zip
+*.bak
+
+# Secrets & credentials
+.env.*
+.envrc
+*.key
+*.pem
+*.crt
+
+# IDE/project files
+.vscode/
+.idea/
+*.iml
+
+# MinIO / S3 local storage
+minio_data/
+
+# PostgreSQL local data
+pg_data/
+
+# Node/npm (if ever used)
+node_modules/
+
+# MacOS metadata
+.DS_Store
