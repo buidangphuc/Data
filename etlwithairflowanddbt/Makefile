@@ -22,16 +22,6 @@ ui:
 	@echo "Airflow UI: http://localhost:8080"
 	@echo "MinIO Console: http://localhost:9001"
 
-# Initialize warehouse PostgreSQL with a sample table and data
-
-pg-init:
-	docker compose exec -T warehouse-pg psql -U analytics -d analytics -c "\
-	CREATE TABLE IF NOT EXISTS raw_jsonplaceholder_posts (id INTEGER PRIMARY KEY, user_id INTEGER, title TEXT, body TEXT, payload JSONB, ingested_at TIMESTAMPTZ DEFAULT now()); \
-	INSERT INTO raw_jsonplaceholder_posts (id, user_id, title, body, payload) VALUES (1,1,'hello','from pg-init','{\"hello\":\"world\"}') ON CONFLICT(id) DO NOTHING;"
-
-show-password:
-	docker compose exec airflow-api bash -lc 'echo "Password for admin:"; cat "$$AIRFLOW_HOME/simple_auth_manager_passwords.json.generated"'
-
 # Show container statuses
 status:
 	docker compose ps
