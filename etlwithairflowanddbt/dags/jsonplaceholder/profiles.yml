@@ -1,0 +1,12 @@
+jsonplaceholder:          # must match: profile: 'jsonplaceholder' in dbt_project.yml
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost      # from host into Docker
+      port: 5433           # mapped port from docker-compose (host 5433 -> container 5432)
+      user: analytics
+      password: analytics
+      dbname: analytics
+      schema: public
+      threads: 4

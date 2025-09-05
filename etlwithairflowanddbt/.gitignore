@@ -65,3 +65,6 @@ node_modules/
 
 # MacOS metadata
 .DS_Store
+
+# git keep
+.gitkeep

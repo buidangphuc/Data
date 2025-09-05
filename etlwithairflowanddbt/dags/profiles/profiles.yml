@@ -1,0 +1,12 @@
+jsonplaceholder:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ conn.pg_warehouse.host }}"
+      port: "{{ conn.pg_warehouse.port | int }}"
+      user: "{{ conn.pg_warehouse.login }}"
+      password: "{{ conn.pg_warehouse.password }}"
+      dbname: "{{ conn.pg_warehouse.schema }}"
+      schema: public
+      threads: 4

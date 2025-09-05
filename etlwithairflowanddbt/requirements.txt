@@ -1,0 +1,4 @@
+astronomer-cosmos~=1.11
+dbt-core~=1.8
+dbt-postgres~=1.8
+apache-airflow-providers-postgres>=10.0.0
