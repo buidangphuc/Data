@@ -1,0 +1,145 @@
+services:
+  kafka:
+    image: bitnami/kafka:3.7.0
+    container_name: kafka
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/bitnami/kafka
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.5.3
+    container_name: schema-registry
+    depends_on:
+      - kafka
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8085
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+    ports:
+      - "8085:8085"
+
+  # MinIO trong cluster vẫn ở http://minio:9000
+  # Host port map -> 9002 (API), 9003 (Console) để tránh conflict 9000/9001
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio12345
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: minio-init
+    depends_on:
+      - minio
+    entrypoint: ["/bin/sh","-c"]
+    command: >
+      "
+      mc config host add local http://minio:9000 minio minio12345 --api s3v4 &&
+      mc mb -p local/warehouse &&
+      mc anonymous set public local/warehouse
+      "
+    restart: "on-failure"
+
+  flink-jobmanager:
+    build:
+      context: ./flink/docker
+      dockerfile: Dockerfile
+    container_name: flink-jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio12345
+      - S3_ENDPOINT=http://minio:9000
+    ports:
+      - "8081:8081"   # Flink UI
+    command: jobmanager
+    volumes:
+      - ./flink/sql:/opt/flink/sql
+      - ./flink/conf:/opt/flink/conf
+    depends_on:
+      - kafka
+      - minio
+
+  flink-taskmanager:
+    build:
+      context: ./flink/docker
+      dockerfile: Dockerfile
+    container_name: flink-taskmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio12345
+      - S3_ENDPOINT=http://minio:9000
+    command: taskmanager
+    depends_on:
+      - flink-jobmanager
+
+  # Spark standalone cluster (Bitnami image chỉ hỗ trợ master/worker)
+  spark-master:
+    image: bitnami/spark:3.5.1
+    container_name: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      # S3 to MinIO
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio12345
+      - S3_ENDPOINT=http://minio:9000
+      - HADOOP_AWS_VERSION=3.3.4
+    ports:
+      - "7077:7077"   # Spark Master RPC
+      - "8080:8080"   # Spark Master UI
+    volumes:
+      - ./spark/jobs:/opt/spark/jobs
+      - ./data:/data
+    depends_on:
+      - kafka
+      - minio
+
+  spark-worker:
+    image: bitnami/spark:3.5.1
+    container_name: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=2
+      # S3 to MinIO (nếu task cần truy cập S3 từ worker)
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=minio
+      - AWS_SECRET_ACCESS_KEY=minio12345
+      - S3_ENDPOINT=http://minio:9000
+      - HADOOP_AWS_VERSION=3.3.4
+    depends_on:
+      - spark-master
+
+volumes:
+  kafka_data: {}
+  minio_data: {}

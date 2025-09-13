@@ -1,0 +1,10 @@
+execution:
+  current-catalog: demo
+  current-database: db
+
+catalogs:
+  - name: demo
+    type: iceberg
+    catalog-impl: org.apache.iceberg.hadoop.HadoopCatalog
+    io-impl: org.apache.iceberg.hadoop.HadoopFileIO
+    warehouse: s3a://warehouse/iceberg/

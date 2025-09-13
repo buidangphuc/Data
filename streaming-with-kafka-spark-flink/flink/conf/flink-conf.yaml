@@ -1,0 +1,12 @@
+# flink/conf/flink-conf.yaml
+jobmanager.rpc.address: flink-jobmanager
+jobmanager.memory.process.size: 1024m
+taskmanager.numberOfTaskSlots: 2
+taskmanager.memory.process.size: 2048m
+parallelism.default: 1
+rest.port: 8081
+
+fs.s3a.endpoint: http://minio:9000
+fs.s3a.path.style.access: true
+blob.server.port: 6124
+query.server.port: 6125
